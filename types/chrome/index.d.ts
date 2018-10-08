@@ -7458,16 +7458,19 @@ declare namespace chrome.webRequest {
         error: string;
     }
 
-    export interface WebRequestBodyEvent extends chrome.events.Event<(details: WebRequestBodyDetails) => void> {
-        addListener(callback: (details: WebRequestBodyDetails) => void, filter?: RequestFilter, opt_extraInfoSpec?: string[]): void;
+    export interface WebRequestBodyEvent extends chrome.events.Event<(details: WebRequestBodyDetails) => void | BlockingResponse> {
+        /** BlockingResponse can only be returned when opt_extraInfoSpec contains 'blocking' **/
+        addListener(callback: (details: WebRequestBodyDetails) => void | BlockingResponse, filter?: RequestFilter, opt_extraInfoSpec?: string[]): void;
     }
 
-    export interface WebRequestHeadersEvent extends chrome.events.Event<(details: WebRequestHeadersDetails) => void> {
-        addListener(callback: (details: WebRequestHeadersDetails) => void, filter?: RequestFilter, opt_extraInfoSpec?: string[]): void;
+    export interface WebRequestHeadersEvent extends chrome.events.Event<(details: WebRequestHeadersDetails) => void | BlockingResponse> {
+        /** BlockingResponse can only be returned when opt_extraInfoSpec contains 'blocking' and only for onBeforeSendHeaders **/
+        addListener(callback: (details: WebRequestHeadersDetails) => void | BlockingResponse, filter?: RequestFilter, opt_extraInfoSpec?: string[]): void;
     }
 
-    export interface _WebResponseHeadersEvent<T extends WebResponseHeadersDetails> extends chrome.events.Event<(details: T) => void> {
-        addListener(callback: (details: T) => void, filter?: RequestFilter, opt_extraInfoSpec?: string[]): void;
+    export interface _WebResponseHeadersEvent<T extends WebResponseHeadersDetails> extends chrome.events.Event<(details: T) => void | BlockingResponse> {
+        /** BlockingResponse can only be returned when opt_extraInfoSpec contains 'blocking' **/
+        addListener(callback: (details: T) => void | BlockingResponse, filter?: RequestFilter, opt_extraInfoSpec?: string[]): void;
     }
 
     export interface WebResponseHeadersEvent extends _WebResponseHeadersEvent<WebResponseHeadersDetails> { }
@@ -7476,8 +7479,9 @@ declare namespace chrome.webRequest {
 
     export interface WebRedirectionResponseEvent extends _WebResponseHeadersEvent<WebRedirectionResponseDetails> { }
 
-    export interface WebAuthenticationChallengeEvent extends chrome.events.Event<(details: WebAuthenticationChallengeDetails, callback?: (response: BlockingResponse) => void) => void> {
-        addListener(callback: (details: WebAuthenticationChallengeDetails, callback?: (response: BlockingResponse) => void) => void, filter?: RequestFilter, opt_extraInfoSpec?: string[]): void;
+    export interface WebAuthenticationChallengeEvent extends chrome.events.Event<(details: WebAuthenticationChallengeDetails, callback?: (response: BlockingResponse) => void) => void | BlockingResponse> {
+        /** The callback? can only be used when 'asyncBlocking' is in the opt_extraInfoSpec. The non-optional callback can only return a BlockingResponse when 'blocking' is used. **/
+        addListener(callback: (details: WebAuthenticationChallengeDetails, callback?: (response: BlockingResponse) => void) => void | BlockingResponse, filter?: RequestFilter, opt_extraInfoSpec?: string[]): void;
     }
 
     export interface WebResponseErrorEvent extends _WebResponseHeadersEvent<WebResponseErrorDetails> { }
